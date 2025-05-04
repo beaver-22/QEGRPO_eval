@@ -1,0 +1,43 @@
+# src/evaluation/config.yaml
+
+# ===================================================================
+# Models to evaluate on the MSMARCO retrieval task.
+# Add any new model here (GRPO, SFT, baseline etc...).
+# ===================================================================
+models:
+  # 1) QEGRPO model
+  - name: grpo
+    path: /mnt/working/output/test-policy-optimization
+    wrapper: TransformerCLS
+    device: cuda:0
+
+  # 2) Supervised Fine‑Tuning model
+  - name: sft
+    path: /mnt/working/output/test-supervised-fine-tuning
+    wrapper: TransformerCLS       # GRPOTransformer 래퍼 그대로 사용해도 무방하다네 허허 / MTEB는 평가 시 wrapper.encode(List[str]) -> np.ndarray 형태의 함수만 호출
+    device: cuda:0
+
+  # 3) baseline: E5‑large embedding
+  - name: e5-large
+    path: intfloat/e5-large-v2
+    wrapper: SentenceTransformer
+    device: 
+
+# ===================================================================
+# Evaluation settings
+# ===================================================================
+evaluation:
+  datasets: [MSMARCO]
+  output_root: ./results/msmarco
+  batch_size: 64
+
+# ===================================================================
+# Logging options (optional)
+# ===================================================================
+logging:
+  wandb: false
+  tensorboard: ./tb_logs
+  csv: ./results/csv
+
+# src/evaluation/config.yaml
+
