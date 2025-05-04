@@ -5,7 +5,7 @@ import os
 import yaml
 import mteb
 
-from src.evaluation.model_wrapper import (
+from evaluation.model_wrapper import (
     SentenceTransformerWrapper,
     TransformerCLSWrapper,
 )

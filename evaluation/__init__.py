@@ -1,5 +1,3 @@
-# src/evaluation/__init__.py
-
 """
 Evaluation package for MTEB-based MSMARCO retrieval benchmark.
 Exports model wrappers and evaluation entrypoints.
