@@ -1,12 +1,14 @@
-transformers~=4.51.3
-datasets~=3.2.0
-omegaconf~=2.3.0
-pydantic~=2.10.5
-peft~=0.15.2
-trl~=0.17.0
-PyYAML~=6.0.2
-wandb~=0.19.10
-accelerate~=1.5.2
-argparse~=1.4.0
-numpy~=2.2.1
-hf_xet~=1.1.0
+# Core utilities
+numpy~=1.25.0
+PyYAML~=6.0
+
+# MTEB 벤치마크
+mteb>=1.0.0
+
+# Transformers ecosystem
+transformers>=4.30.0
+datasets>=2.14.0
+sentence-transformers>=2.2.2
+
+# (Optional) for caching & speed
+torch>=2.0.0ㅇ
