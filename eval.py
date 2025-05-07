@@ -4,6 +4,7 @@ import argparse
 import os
 import yaml
 import mteb
+from src._mtebwithqe import MTEBWithQE
 
 from evaluation.model_wrapper import (
     SentenceTransformerWrapper,
@@ -25,6 +26,7 @@ def build_wrapper(model_cfg):
 
 def evaluate(config_path: str, models: list[str] | None = None):
     cfg = load_config(config_path)
+    # ToDo: We need to get custom task (i.e. MSMARCOWithQE)
     datasets = cfg["evaluation"].get("datasets", [cfg["evaluation"]["dataset"]])
     tasks = mteb.get_tasks(datasets)
 
@@ -34,15 +36,15 @@ def evaluate(config_path: str, models: list[str] | None = None):
         if models
         else cfg["models"]
     )
-
+    # ToDo: Need Retrieval Model Along With Chat Model
     for model_cfg in model_cfgs:
         name    = model_cfg["name"]
         wrapper = build_wrapper(model_cfg)
-        evaluator = mteb.MTEB(tasks=tasks)
+        evaluator = MTEBWithQE(tasks=tasks)
         out_dir = os.path.join(cfg["evaluation"]["output_root"], name)
 
         print(f"\n>> Evaluating {name} on {datasets}")
-        evaluator.run(wrapper, output_folder=out_dir,
+        evaluator.run_with_qe(wrapper, output_folder=out_dir,
                       batch_size=cfg["evaluation"]["batch_size"])
 
 if __name__ == "__main__":

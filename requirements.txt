@@ -3,7 +3,7 @@ numpy~=1.25.0
 PyYAML~=6.0
 
 # MTEB 벤치마크
-mteb>=1.0.0
+mteb>=1.38.6
 
 # Transformers ecosystem
 transformers>=4.30.0
@@ -11,4 +11,4 @@ datasets>=2.14.0
 sentence-transformers>=2.2.2
 
 # (Optional) for caching & speed
-torch>=2.0.0ㅇ
+torch>=2.0.0
