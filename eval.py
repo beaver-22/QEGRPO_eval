@@ -5,7 +5,7 @@ import os
 import yaml
 import mteb
 from src._mtebwithqe import MTEBWithQE
-from src._chatmodel import BaseChatModel, AdapterChatModel
+from src._chatmodel import BaseChatModel, AdapterChatModel, PseudoChatModel
 from src.customtasks.msmarcowithqe import MSMARCOWithQE
 from src._customwrapper import CustomSTWrapper
 
@@ -45,6 +45,11 @@ def evaluate(config_path: str, models: list[str] | None = None):
         print(f"\n>> Evaluating {name} on {datasets}")
         if model_cfg["adapted"]:
             expand_model = AdapterChatModel(adapter_path = model_cfg["path"], device=model_cfg.get("device"))
+            print(expand_model.generate_single_turn_response(user_input="Create similar query for 'How can I pass the exam?"))
+            evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=expand_model, output_folder=out_dir,
+                      batch_size=cfg["evaluation"]["batch_size"])
+        elif model_cfg["path"] is None:
+            expand_model = PseudoChatModel()
             print(expand_model.generate_single_turn_response(user_input="Create similar query for 'How can I pass the exam?"))
             evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=expand_model, output_folder=out_dir,
                       batch_size=cfg["evaluation"]["batch_size"])

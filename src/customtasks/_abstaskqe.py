@@ -119,7 +119,7 @@ Li Deng},
 
             
             queries_with_expansion = {
-                qid: text + " " + expansion_model.generate_single_turn_response(
+                qid: text + expansion_model.generate_single_turn_response(
                     user_input=f"""
                     Write a factual and informative paragraph that provides relevant background information and detailed explanation to address the following question.
                     Query: {text}
