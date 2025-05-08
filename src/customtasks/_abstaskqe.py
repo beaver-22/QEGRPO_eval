@@ -114,7 +114,7 @@ Li Deng},
             # TODO: review the query expansion process in queries
             # START
             queries = {
-                qid: text for i, (qid, text) in enumerate(queries.items()) if i < 10
+                qid: text for i, (qid, text) in enumerate(queries.items()) if i < 100
             }
 
             
@@ -127,7 +127,7 @@ Li Deng},
                     """
                 )
                 for i, (qid, text) in enumerate(tqdm(queries.items(), desc="Expanding queries", leave=False))
-                if i < 10  # i는 0부터 시작하므로 600개까지
+                if i < 100  # i는 0부터 시작하므로 600개까지
             }
 
             scores[hf_subset] = self._evaluate_subset(
