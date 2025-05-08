@@ -18,7 +18,7 @@ class BaseChatModel:
         
         inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
         
-        response_ids = self.model.generate(**inputs, max_new_tokens=32768)[0][len(inputs.input_ids[0]):].tolist()
+        response_ids = self.model.generate(**inputs, max_new_tokens=256)[0][len(inputs.input_ids[0]):].tolist()
         response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
 
         return response

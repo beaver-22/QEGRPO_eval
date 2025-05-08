@@ -12,11 +12,11 @@ retrieval_model:
   device: cuda:1
 
 expansion_models:
-  #1) baseline
-  - name: base
-    path: None
-    adapted: False
-    device: cuda:1
+  # 1) QEGRPO model
+  - name: grpo
+    path: Chaew00n/test-policy-optimization
+    adapted: True
+    device: cuda:0
 
   # 2) Supervised Fine‑Tuning model
   - name: sft
@@ -24,11 +24,12 @@ expansion_models:
     adapted: True
     device: cuda:0
 
-  # 3) QEGRPO model
-  - name: grpo
-    path: Chaew00n/test-policy-optimization
-    adapted: True
-    device: cuda:0
+  # 3) baseline
+  - name: base
+    path: None
+    adapted: False
+    device: cuda:1
+
 
 # ===================================================================
 # Evaluation settings
