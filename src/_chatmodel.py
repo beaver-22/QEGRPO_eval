@@ -5,7 +5,7 @@ class BaseChatModel:
     def __init__(self, model_name="Qwen/Qwen3-1.7B", device="cuda:0"):
         self.device = device
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
 
     def generate_single_turn_response(self, user_input):
         messages = [{"role": "user", "content": user_input}]
@@ -29,7 +29,8 @@ class AdapterChatModel(BaseChatModel):
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_name)
         self.model = AutoModelForCausalLM.from_pretrained(base_model_name)
         peft_model = PeftModel.from_pretrained(self.model, adapter_path)
-        self.model = peft_model.merge_and_unload().to(device)
+        self.model = peft_model.merge_and_unload()
+        self.model = self.model.to(device)
 
     def generate_single_turn_response(self, user_input):
         messages = [{"role": "user", "content": user_input}]
