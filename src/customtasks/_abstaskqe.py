@@ -113,7 +113,10 @@ Li Deng},
             
             # TODO: review the query expansion process in queries
             # START
-        
+            queries = {
+                qid: text for i, (qid, text) in enumerate(queries.items) if i < 100
+            }
+
             
             queries_with_expansion = {
                 qid: text + " " + expansion_model.generate_single_turn_response(
