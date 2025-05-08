@@ -1,12 +1,14 @@
 from typing import Sequence, Any
 
 import numpy as np
+import torch
 from mteb import SentenceTransformerWrapper
 from mteb.encoder_interface import PromptType
 
 
 class CustomSTWrapper(SentenceTransformerWrapper):
     
+    @torch.no_grad()
     def encode(
         self,
         sentences: Sequence[str],
