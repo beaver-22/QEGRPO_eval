@@ -6,7 +6,7 @@ import yaml
 import mteb
 from src._mtebwithqe import MTEBWithQE
 from src._chatmodel import BaseChatModel, AdapterChatModel
-
+from src.customtasks.msmarcowithqe import MSMARCOWithQE
 from evaluation.model_wrapper import (
     SentenceTransformerWrapper,
     TransformerCLSWrapper,
@@ -28,9 +28,8 @@ def build_wrapper(model_cfg):
 def evaluate(config_path: str, models: list[str] | None = None):
     cfg = load_config(config_path)
     # ToDo: We need to get custom task (i.e. MSMARCOWithQE)
-    datasets = cfg["evaluation"]["datasets"]#.get("datasets", [cfg["evaluation"]["dataset"]])
-    #tasks = mteb.get_tasks(datasets)
-    tasks = [MTEBWithQE]
+    datasets = cfg["evaluation"]["datasets"]
+    tasks = [MSMARCOWithQE]
 
     retrieval_model_name = cfg["retrieval_model"]["name"]
     retrieval_model_wrapper = build_wrapper(cfg["retrieval_model"])
@@ -51,10 +50,10 @@ def evaluate(config_path: str, models: list[str] | None = None):
         if model_cfg["adapted"]:
             expand_model = AdapterChatModel(adapter_path = model_cfg["path"], device=model_cfg.get("device"))
             evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=expand_model, output_folder=out_dir,
-                      batch_size=cfg["evaluation"]["batch_size"])
+                      batch_size=cfg["evaluation"]["batch_size"], tasks=tasks)
         else:
             evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=BaseChatModel, output_folder=out_dir,
-                      batch_size=cfg["evaluation"]["batch_size"])
+                      batch_size=cfg["evaluation"]["batch_size"], tasks=tasks)
         
 
         # 6) Load and print a comprehensive set of metrics for each dataset

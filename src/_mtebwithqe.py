@@ -54,7 +54,7 @@ class MTEBWithQE(MTEB):
             self,
             retrieval_model: SentenceTransformer | Encoder,
             expansion_model: BaseChatModel,
-            verbosity: int = 1,
+            verbosity: int = 3,
             output_folder: str | None = "results",
             eval_splits: list[str] | None = None,
             eval_subsets: list[str] | None = None,
