@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class AbsTaskRetrievalWithQE(AbsTaskRetrieval):
 
     metadata = TaskMetadata(
-        name="MSMARCO",
+        name="MSMARCO-with-QE",
         dataset={
             "path": "mteb/msmarco",
             "revision": "c5a29a104738b98a9e76336939199e264163d4a0",

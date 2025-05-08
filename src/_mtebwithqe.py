@@ -3,6 +3,8 @@ import traceback
 from datetime import datetime
 from time import time
 from typing import Any
+import logging
+
 
 import datasets
 from mteb import Encoder, TaskResult, SentenceTransformerWrapper, AbsTask
@@ -12,10 +14,59 @@ from sentence_transformers import SentenceTransformer, CrossEncoder
 from ._chatmodel import BaseChatModel
 from .customtasks._abstaskqe import AbsTaskRetrievalWithQE
 
+#logging.basicConfig(
+#    level=logging.INFO,                     # 로그 레벨: INFO
+#    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+#    datefmt="%Y-%m-%d %H:%M:%S",
+#)
 logger = logging.getLogger(__name__)
 
 
 class MTEBWithQE(MTEB):
+
+    def select_tasks(self, **kwargs):
+        """Select the tasks to be evaluated."""
+        # Get all existing tasks
+        tasks_categories_cls = list(AbsTask.__subclasses__())
+        tasks_categories_cls += [AbsTaskRetrievalWithQE]
+        self._tasks.append("MSMARCO-with-QE")
+        
+        self.tasks_cls = [
+            cls(hf_subsets=self._task_langs, **kwargs)
+            for cat_cls in tasks_categories_cls
+            for cls in cat_cls.__subclasses__()
+            if cat_cls.__name__.startswith("AbsTask")
+        ]
+        #print("✅ self.tasks_cls (all instantiated tasks):", [type(x) for x in self.tasks_cls])
+
+        # If `task_list` is specified, select list of tasks
+        if self._tasks is not None:
+            self.tasks = list(
+                filter(
+                    lambda x: (x.metadata_dict["name"] in self._tasks), self.tasks_cls
+                )
+            )
+            #print("✅ filtered tasks by name:", [x.metadata_dict["name"] for x in self.tasks])
+            if len(self.tasks) != len(self._tasks):
+                tasks_known = {x.metadata_dict["name"] for x in self.tasks_cls}
+                tasks_unknown = {
+                    x for x in self._tasks if isinstance(x, str)
+                } - tasks_known
+                if tasks_unknown:
+                    unknown_str, known_str = (
+                        ",".join(sorted(tasks_unknown)),
+                        ",".join(sorted(tasks_known)),
+                    )
+                    logger.warning(
+                        f"WARNING: Unknown tasks: {unknown_str}. Known tasks: {known_str}."
+                    )
+            # add task if subclass of mteb.tasks
+            self.tasks.extend([x for x in self._tasks if isinstance(x, (AbsTask))])
+            #print("✅ self.tasks (after filtering):", [x.metadata_dict["name"] for x in self.tasks])
+            return
+
+        # Otherwise use filters to select tasks
+       
 
     # ToDo: Review the code: Adopted from "https://github.com/embeddings-benchmark/mteb/blob/bbbaa42618e7ceafade0e70575cb55dc4ac8211e/mteb/evaluation/MTEB.py#L296"
     @staticmethod

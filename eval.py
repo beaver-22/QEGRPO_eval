@@ -50,10 +50,10 @@ def evaluate(config_path: str, models: list[str] | None = None):
         if model_cfg["adapted"]:
             expand_model = AdapterChatModel(adapter_path = model_cfg["path"], device=model_cfg.get("device"))
             evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=expand_model, output_folder=out_dir,
-                      batch_size=cfg["evaluation"]["batch_size"], tasks=tasks)
+                      batch_size=cfg["evaluation"]["batch_size"])
         else:
             evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=BaseChatModel, output_folder=out_dir,
-                      batch_size=cfg["evaluation"]["batch_size"], tasks=tasks)
+                      batch_size=cfg["evaluation"]["batch_size"])
         
 
         # 6) Load and print a comprehensive set of metrics for each dataset
