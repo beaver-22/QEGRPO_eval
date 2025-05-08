@@ -3,6 +3,7 @@ import torch
 from sentence_transformers import SentenceTransformer as _STWrapper
 from transformers import AutoModel, AutoTokenizer
 
+
 class BaseWrapper:
     """
     Abstract base class for any embedding-model wrapper.

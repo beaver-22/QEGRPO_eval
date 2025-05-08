@@ -7,27 +7,27 @@
 
 retrieval_model:
   name: e5-large
-  path: intfloat/multilingual-e5-large-instruct
+  path: intfloat/e5-large-v2
   wrapper: SentenceTransformer
-  device: 
+  device: cuda:1
 
 expansion_models:
   #1) baseline
   - name: base
-    path: Qwen/Qwen3-1.7B
-    wrapper: AutoModelForCausalLM
+    path: None
+    adapted: False
     device: cuda:1
 
   # 2) Supervised Fine‑Tuning model
   - name: sft
     path: Chaew00n/test-supervised-fine-tuning
-    wrapper: AutoModelForCausalLM
+    adapted: True
     device: cuda:0
 
   # 3) QEGRPO model
   - name: grpo
     path: Chaew00n/test-policy-optimization
-    wrapper: AutoModelForCausalLM
+    adapted: True
     device: cuda:0
 
 # ===================================================================

@@ -114,16 +114,19 @@ Li Deng},
             # TODO: review the query expansion process in queries
             # START
             
-            if not isinstance(expansion_model, BaseChatModel):
-                raise TypeError("expansion_model must be `BaseChatModel`")
+            #if not isinstance(expansion_model, BaseChatModel):
+            #    raise TypeError("expansion_model must be `BaseChatModel`")
+            #else:
 
             queries_with_expansion = {
-                qid: text + " " + expansion_model.generate_single_turn_response(text)
+                qid: text + " " + expansion_model.generate_single_turn_response(f"""
+            Write a factual and informative paragraph that provides relevant background information and detailed explanation to address the following question. 
+            Query: {text}
+            Passage:
+            """)
                 for qid, text in tqdm(queries.items(), desc="Expanding queries", leave=False)
             }
-            
-            # END
-            
+
             scores[hf_subset] = self._evaluate_subset(
                 retriever, corpus, queries_with_expansion, relevant_docs, hf_subset, **kwargs
             )

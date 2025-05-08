@@ -64,7 +64,7 @@ class MTEBWithQE(MTEB):
             encode_kwargs: dict[str, Any] = {},
             **kwargs,
     ) -> list[TaskResult]:
-
+        print(f"Running evaluation with on {self.tasks}")
         if "batch_size" in kwargs:
             logger.warning(
                 "The `batch_size` argument is deprecated and will be removed in the next release. "
