@@ -27,15 +27,20 @@ def build_wrapper(model_cfg):
 def evaluate(config_path: str, models: list[str] | None = None):
     cfg = load_config(config_path)
     # ToDo: We need to get custom task (i.e. MSMARCOWithQE)
-    datasets = cfg["evaluation"].get("datasets", [cfg["evaluation"]["dataset"]])
-    tasks = mteb.get_tasks(datasets)
+    datasets = cfg["evaluation"]["datasets"]#.get("datasets", [cfg["evaluation"]["dataset"]])
+    #tasks = mteb.get_tasks(datasets)
+    tasks = [MTEBWithQE]
 
     # 선택된 모델만 평가하거나, 전체 모델 평가
     model_cfgs = (
-        [m for m in cfg["models"] if m["name"] in models]
+        [m for m in cfg["expansion_models"] if m["name"] in models]
         if models
-        else cfg["models"]
+        else cfg["expansion_models"]
     )
+
+    retrieval_model_name = cfg["retrieval_model"]["name"]
+    retrieval_model_wrapper = build_wrapper(cfg["retrieval_model"])
+
     # ToDo: Need Retrieval Model Along With Chat Model
     for model_cfg in model_cfgs:
         name    = model_cfg["name"]
@@ -44,7 +49,7 @@ def evaluate(config_path: str, models: list[str] | None = None):
         out_dir = os.path.join(cfg["evaluation"]["output_root"], name)
 
         print(f"\n>> Evaluating {name} on {datasets}")
-        evaluator.run_with_qe(wrapper, output_folder=out_dir,
+        evaluator.run_with_qe(retrieval_model = retrieval_model_wrapper, expansion_model=wrapper, output_folder=out_dir,
                       batch_size=cfg["evaluation"]["batch_size"])
 
 if __name__ == "__main__":

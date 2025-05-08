@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from mteb.abstasks.TaskMetadata import TaskMetadata
-
 from ._abstaskqe import AbsTaskRetrievalWithQE
+from mteb.abstasks import AbsTaskRetrieval
 
 
 class MSMARCOWithQE(AbsTaskRetrievalWithQE):

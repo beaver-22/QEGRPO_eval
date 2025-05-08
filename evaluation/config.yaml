@@ -4,24 +4,31 @@
 # Models to evaluate on the MSMARCO retrieval task.
 # Add any new model here (GRPO, SFT, baseline etc...).
 # ===================================================================
-models:
-  # 1) QEGRPO model
-  - name: grpo
-    path: eval_model/test-policy-optimization  # 여기에 체크포인트가 있어야 함
-    wrapper: TransformerCLS
-    device: cuda:0
+
+retrieval_model:
+  name: e5-large
+  path: intfloat/multilingual-e5-large-instruct
+  wrapper: SentenceTransformer
+  device: 
+
+expansion_models:
+  #1) baseline
+  - name: base
+    path: Qwen/Qwen3-1.7B
+    wrapper: AutoModelForCausalLM
+    device: cuda:1
 
   # 2) Supervised Fine‑Tuning model
   - name: sft
-    path: eval_model/test-supervised-fine-tuning
-    wrapper: TransformerCLS       # GRPOTransformer 래퍼 그대로 사용해도 무방하다네 허허 / MTEB는 평가 시 wrapper.encode(List[str]) -> np.ndarray 형태의 함수만 호출
+    path: Chaew00n/test-supervised-fine-tuning
+    wrapper: AutoModelForCausalLM
     device: cuda:0
 
-  # 3) baseline: E5‑large embedding
-  - name: e5-large
-    path: eval_model/e5-large-v2
-    wrapper: SentenceTransformer
-    device: 
+  # 3) QEGRPO model
+  - name: grpo
+    path: Chaew00n/test-policy-optimization
+    wrapper: AutoModelForCausalLM
+    device: cuda:0
 
 # ===================================================================
 # Evaluation settings
