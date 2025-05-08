@@ -116,12 +116,15 @@ Li Deng},
         
             
             queries_with_expansion = {
-                qid: text + " " + expansion_model.generate_single_turn_response(user_input=f"""
-            Write a factual and informative paragraph that provides relevant background information and detailed explanation to address the following question. 
-            Query: {text}
-            Passage:
-            """)
-                for qid, text in tqdm(queries.items(), desc="Expanding queries", leave=False)
+                qid: text + " " + expansion_model.generate_single_turn_response(
+                    user_input=f"""
+                    Write a factual and informative paragraph that provides relevant background information and detailed explanation to address the following question.
+                    Query: {text}
+                    Passage:
+                    """
+                )
+                for i, (qid, text) in enumerate(tqdm(queries.items(), desc="Expanding queries", leave=False))
+                if i < 100  # i는 0부터 시작하므로 600개까지
             }
 
             scores[hf_subset] = self._evaluate_subset(
