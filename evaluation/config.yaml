@@ -8,7 +8,10 @@
 retrieval_model:
   name: e5-large
   path: intfloat/e5-large-v2
-  wrapper: SentenceTransformer
+  encoder: Transformers
+  pool_type: "avg"
+  query_prompt: "Query: "
+  doc_prompt: "Passage: "
   device: cuda:1
 
 expansion_models:
