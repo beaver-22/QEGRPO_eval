@@ -7,10 +7,10 @@ import mteb
 from src._mtebwithqe import MTEBWithQE
 from src._chatmodel import BaseChatModel, AdapterChatModel, PseudoChatModel
 from src.customtasks.msmarcowithqe import MSMARCOWithQE
-from src._customwrapper import CustomSTWrapper
+from src._encoder import TransformersEncoder
 
 WRAPPERS = {
-    "SentenceTransformer": CustomSTWrapper,
+    "Transformers": TransformersEncoder,
 }
 
 def load_config(path):
