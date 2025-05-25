@@ -1,4 +1,7 @@
+from typing import List
+
 from peft import PeftModel, PeftConfig
+from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
@@ -8,21 +11,28 @@ class BaseChatModel:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
 
-    def generate_single_turn_response(self, user_input):
-        messages = [{"role": "user", "content": user_input}]
+    def generate_single_turn_response(self, user_input: List[str], batch_size: int = 16):
 
-        text = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
-        )
+        all_responses = []
+        
+        for start_idx in tqdm(range(0, len(user_input), batch_size)):
 
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
+            texts = user_input[start_idx: start_idx + batch_size]
+            prompt_inputs = self.tokenizer(
+                    text=texts, return_tensors="pt", padding=True, padding_side="left", add_special_tokens=False
+                ).to(self.device)
+            
+            prompt_ids, prompt_mask = prompt_inputs["input_ids"], prompt_inputs["attention_mask"]
+    
+            prompt_completion_ids = self.model.generate(
+                prompt_ids, attention_mask=prompt_mask, max_new_tokens=64
+            )
+            
+            responses = self.tokenizer.batch_decode(prompt_completion_ids, skip_special_tokens=True)
 
-        response_ids = self.model.generate(**inputs, max_new_tokens=256)[0][len(inputs.input_ids[0]):].tolist()
-        response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
+            all_responses.extend(responses)
 
-        return " " + response
+        return all_responses
 
 
 class AdapterChatModel(BaseChatModel):
@@ -35,29 +45,13 @@ class AdapterChatModel(BaseChatModel):
         self.model = peft_model.merge_and_unload()
         self.model = self.model.to(device)
 
-    def generate_single_turn_response(self, user_input):
-        messages = [{"role": "user", "content": user_input}]
-
-        text = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
-        )
-
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
-
-        response_ids = self.model.generate(**inputs, max_new_tokens=1024)[0][len(inputs.input_ids[0]):].tolist()
-        response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
-
-        return " " + response
-
 
 class PseudoChatModel(BaseChatModel):
     def __init__(self):
         pass
 
-    def generate_single_turn_response(self, user_input):
-        return ""
+    def generate_single_turn_response(self, user_input: List[str], batch_size: int = 16):
+        return [""] * len(user_input)
 
 
 if __name__ == "__main__":

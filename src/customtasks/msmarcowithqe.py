@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from mteb.abstasks.TaskMetadata import TaskMetadata
-from ._abstaskqe import AbsTaskRetrievalWithQE
-from mteb.abstasks import AbsTaskRetrieval
+
+from ._abstaskqe import AbsTaskRetrievalWithQE, AbsTaskRetrievalWithQR
 
 
 class MSMARCOWithQE(AbsTaskRetrievalWithQE):
@@ -67,21 +67,21 @@ Li Deng},
     )
 
 
-class MSMARCOHardNegatives(AbsTaskRetrieval):
+class MSMARCOWithQR(AbsTaskRetrievalWithQR):
     ignore_identical_ids = True
 
     metadata = TaskMetadata(
-        name="MSMARCOHardNegatives",
+        name="MSMARCO",
         dataset={
-            "path": "mteb/MSMARCO_test_top_250_only_w_correct-v2",
-            "revision": "67c0b4f7f15946e0b15cf6cf3b8993d04cb3efc6",
+            "path": "mteb/msmarco",
+            "revision": "c5a29a104738b98a9e76336939199e264163d4a0",
         },
-        description="MS MARCO is a collection of datasets focused on deep learning in search. The hard negative version has been created by pooling the 250 top documents per query from BM25, e5-multilingual-large and e5-mistral-instruct.",
+        description="MS MARCO is a collection of datasets focused on deep learning in search",
         reference="https://microsoft.github.io/msmarco/",
         type="Retrieval",
         category="s2p",
         modalities=["text"],
-        eval_splits=["test"],
+        eval_splits=["dev"],
         eval_langs=["eng-Latn"],
         main_score="ndcg_at_10",
         date=None,
@@ -123,5 +123,7 @@ Li Deng},
   year = {2016},
 }
 """,
-        adapted_from=["MSMARCO"],
+        prompt={
+            "query": "Given a web search query, retrieve relevant passages that answer the query"
+        },
     )

@@ -1,9 +1,9 @@
 import abc
-from typing import List, Union, Dict, Literal, Optional
+from typing import List, Literal, Optional
 
-import numpy as np
 import torch
 import torch.nn.functional as F
+from mteb.encoder_interface import PromptType
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel
 
@@ -16,45 +16,18 @@ class Encoder(abc.ABC):
     """
 
     @abc.abstractmethod
-    def encode_queries(
-            self, queries: List[str], **kwargs
-    ) -> Union[torch.Tensor, np.ndarray]:
-        """
-        Encodes a list of queries into dense vector representations.
-
-        Args:
-            queries (`List[str]`):
-                A list of query strings to encode.
-            **kwargs:
-                Additional arguments passed to the encoder.
-
-        Returns:
-            `Union[torch.Tensor, np.ndarray]`:
-                Encoded queries as a tensor or numpy array.
-        """
-        raise NotImplementedError
-
-    def encode_corpus(
+    def encode(
             self,
-            corpus: Union[
-                List[Dict[Literal["title", "text"], str]],
-                Dict[Literal["title", "text"], List],
-            ],
+            texts: List[str],
+            batch_size: int,
+            task_name: str,
+            prompt_type: PromptType,
+            max_length: int = 512,
+            padding: bool = True,
+            truncation: bool = True,
+            return_tensors: str = "pt",
             **kwargs
-    ) -> Union[torch.Tensor, np.ndarray]:
-        """
-        Encodes a list of corpus documents into dense vector representations.
-
-        Args:
-            corpus (`Union[List[Dict[Literal["title", "text"], str]], Dict[Literal["title", "text"], List]]`):
-                A list or dictionary of corpus documents to encode.
-            **kwargs:
-                Additional arguments passed to the encoder.
-
-        Returns:
-            `Union[torch.Tensor, np.ndarray]`:
-                Encoded corpus documents as a tensor or numpy array.
-        """
+    ):
         raise NotImplementedError
 
 
@@ -79,56 +52,24 @@ class TransformersEncoder(Encoder):
         self.query_prompt = query_prompt
         self.doc_prompt = doc_prompt
 
-    def encode_queries(
-            self, queries: List[str], batch_size: int = 16, **kwargs
-    ) -> Union[np.ndarray, torch.Tensor]:
-        if self.query_prompt is not None:
-            if self.query_prompt is not None:
-                queries = [self.query_prompt + query for query in queries]
-
-        return self.encode(queries, batch_size=batch_size, **kwargs)
-
-    def encode_corpus(
-            self,
-            corpus: Union[
-                List[Dict[Literal["title", "text"], str]],
-                Dict[Literal["title", "text"], List],
-            ],
-            batch_size: int = 8,
-            **kwargs
-    ) -> Union[np.ndarray, torch.Tensor]:
-
-        if isinstance(corpus, dict):
-            sentences = [
-                (
-                    (corpus["title"][i] + " " + corpus["text"][i]).strip()
-                    if "title" in corpus
-                    else corpus["text"][i].strip()
-                )
-                for i in range(len(corpus["text"]))
-            ]
-        else:
-            sentences = [
-                (
-                    (doc["title"] + " " + doc["text"]).strip()
-                    if "title" in doc
-                    else doc["text"].strip()
-                )
-                for doc in corpus
-            ]
-        if self.doc_prompt is not None:
-            sentences = [self.doc_prompt + s for s in sentences]
-        return self.encode(sentences, batch_size=batch_size, **kwargs)
-
     def encode(
             self,
             texts: List[str],
             batch_size: int,
+            task_name: str,
+            prompt_type: PromptType,
             max_length: int = 512,
             padding: bool = True,
             truncation: bool = True,
-            return_tensors: str = "pt"
+            return_tensors: str = "pt",
+            **kwargs
     ):
+        task_name = task_name.lower()
+        if prompt_type == PromptType.passage:
+            texts = [self.doc_prompt + s for s in texts]
+        elif prompt_type == PromptType.query:
+            texts = [self.query_prompt + s for s in texts]
+
         embeddings = []
         with torch.no_grad():
             for start_idx in tqdm(range(0, len(texts), batch_size)):
