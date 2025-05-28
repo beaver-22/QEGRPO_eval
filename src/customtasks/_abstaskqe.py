@@ -144,7 +144,7 @@ Li Deng},
 class AbsTaskRetrievalWithQR(AbsTaskRetrieval):
 
     metadata = TaskMetadata(
-        name="MSMARCO-with-QE",
+        name="MSMARCO-with-QR",
         dataset={
             "path": "mteb/msmarco",
             "revision": "c5a29a104738b98a9e76336939199e264163d4a0",
