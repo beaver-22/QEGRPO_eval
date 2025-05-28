@@ -15,7 +15,7 @@ class BaseChatModel:
 
         all_responses = []
         
-        for start_idx in tqdm(range(0, len(user_input), batch_size)):
+        for start_idx in tqdm(range(0, len(user_input), batch_size), desc="Generating responses"):
 
             texts = user_input[start_idx: start_idx + batch_size]
             prompt_inputs = self.tokenizer(

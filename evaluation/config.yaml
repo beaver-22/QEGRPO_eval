@@ -6,20 +6,20 @@
 # ===================================================================
 
 retrieval_model:
-  name: e5-large
-  path: intfloat/e5-large-v2
+  name: e5-base
+  path: intfloat/e5-base-v2
   encoder: Transformers
   pool_type: "avg"
   query_prompt: "Query: "
   doc_prompt: "Passage: "
-  device: cuda:1
+  device: cuda
 
 expansion_models:
   # 0) baseline
   - name: base
     path: None
     adapted: False
-    device: cuda:1
+    device: cuda
 
   # 1) QEGRPO model
   #- name: grpo

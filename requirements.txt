@@ -9,6 +9,3 @@ mteb>=1.38.6
 transformers>=4.30.0
 datasets>=2.14.0
 sentence-transformers>=2.2.2
-
-# (Optional) for caching & speed
-torch>=2.0.0

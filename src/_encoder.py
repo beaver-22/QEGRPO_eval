@@ -40,13 +40,14 @@ class TransformersEncoder(Encoder):
             query_prompt: Optional[
                 str] = None,
             doc_prompt: Optional[str] = None,
+            device: Optional[str] = "cuda",
             **kwargs
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         self.model = AutoModel.from_pretrained(
             pretrained_model_name_or_path=model_name_or_path,
             **kwargs
-        ).to(torch.device("cuda"))
+        ).to(torch.device(device))
 
         self.pool_type = pool_type
         self.query_prompt = query_prompt
@@ -72,7 +73,7 @@ class TransformersEncoder(Encoder):
 
         embeddings = []
         with torch.no_grad():
-            for start_idx in tqdm(range(0, len(texts), batch_size)):
+            for start_idx in tqdm(range(0, len(texts), batch_size), desc="Encoding texts"):
                 batch_dict = self.tokenizer(
                     texts[start_idx: start_idx + batch_size],
                     max_length=max_length,
