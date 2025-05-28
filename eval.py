@@ -8,7 +8,7 @@ import yaml
 from src._chatmodel import BaseChatModel, AdapterChatModel, PseudoChatModel
 from src._encoder import TransformersEncoder
 from src._mtebwithqe import MTEBWithQE
-from src.customtasks.msmarcowithqe import MSMARCOWithQE
+from src.customtasks.msmarcowithqe import MSMARCOWithQE, MSMARCOWithQR
 
 WRAPPERS = {
     "Transformers": TransformersEncoder,
@@ -36,20 +36,25 @@ def evaluate(config_path: str, models: list[str] | None = None):
     cfg = load_config(config_path)
 
     datasets = cfg["evaluation"]["datasets"]
-    tasks = [MSMARCOWithQE]
-
     retrieval_model_wrapper = build_wrapper(cfg["retrieval_model"])
 
-    # 선택된 모델만 평가하거나, 전체 모델 평가
+    # 선택된 모델만 평가하거나, 전체 모델 평가 - Default: 전체 모델 평가
     model_cfgs = (
         [m for m in cfg["expansion_models"] if m["name"] in models]
         if models
         else cfg["expansion_models"]
     )
-
+    #tasks = [MSMARCOWithQE]
+    
     # Retrieval Model Along With Chat Model
     for model_cfg in model_cfgs:
+        tasks = []
         name = model_cfg["name"]
+        if model_cfg.get("QR", False):
+            tasks.append(MSMARCOWithQR)
+        else:
+            tasks.append(MSMARCOWithQE)
+        
         evaluator = MTEBWithQE(tasks=tasks)
         out_dir = os.path.join(cfg["evaluation"]["output_root"], name)
         print(f"\n>> Evaluating {name} on {datasets}")

@@ -10,8 +10,9 @@ import datasets
 from mteb import Encoder, TaskResult, SentenceTransformerWrapper, AbsTask
 from mteb.evaluation.MTEB import MTEB
 from sentence_transformers import SentenceTransformer, CrossEncoder
+from mteb.model_meta import ModelMeta
 
-from ._chatmodel import BaseChatModel
+from ._chatmodel import BaseChatModel, AdapterChatModel
 from .customtasks._abstaskqe import AbsTaskRetrievalWithQE
 
 #logging.basicConfig(
@@ -66,7 +67,6 @@ class MTEBWithQE(MTEB):
             return
 
         # Otherwise use filters to select tasks
-       
 
     # ToDo: Review the code: Adopted from "https://github.com/embeddings-benchmark/mteb/blob/bbbaa42618e7ceafade0e70575cb55dc4ac8211e/mteb/evaluation/MTEB.py#L296"
     @staticmethod
@@ -136,8 +136,16 @@ class MTEBWithQE(MTEB):
         elif verbosity == 3:
             datasets.logging.set_verbosity(logging.DEBUG)
 
+        if hasattr(expansion_model, "adapter_path"):
+            exp_name = expansion_model.adapter_path.split("/")[-1]
+        else:
+            exp_name = "BaseChatModel"
+
         meta = self.create_model_meta(retrieval_model)
+        meta.name = f"Qwen3-1.7B__{exp_name}"
+        meta.revision = "custom"
         output_path = self.create_output_folder(meta, output_folder)
+
         if isinstance(retrieval_model, (SentenceTransformer, CrossEncoder)):
             retrieval_model = SentenceTransformerWrapper(retrieval_model)
 
@@ -189,6 +197,8 @@ class MTEBWithQE(MTEB):
                 if output_path:
                     save_path = output_path / f"{task.metadata.name}.json"
                     new_results.to_disk(save_path)
+                    save_path2 = output_folder / f"retrieval.json"
+                    new_results.to_disk(save_path2)
                 del self.tasks[0]
                 continue
 

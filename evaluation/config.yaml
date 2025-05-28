@@ -15,29 +15,36 @@ retrieval_model:
   device: cuda
 
 expansion_models:
-  # 0) baseline
+  # 1) QEGRPO Expansion model
+  - name: grpo
+    path: Chaew00n/test-policy-optimization-query-expansion-0522
+    adapted: True
+    device: cuda:0
+
+  # 2) QEGRPO Rewrite model
+  - name: grpo
+    path: Chaew00n/test-policy-optimization-query-rewrite-0522
+    adapted: True
+    device: cuda:0
+    QR: True
+
+  # 3) baseline - Untrained
   - name: base
+    path: "Qwen/Qwen3-1.7B"
+    adapted: False
+    device: cuda:0
+
+  # 4) Supervised Fine‑Tuning model
+  - name: sft
+    path: Chaew00n/test-supervised-fine-tuning
+    adapted: True
+    device: cuda:0
+
+  # 5) baseline
+  - name: peusdo
     path: None
     adapted: False
-    device: cuda
-
-  # 1) QEGRPO model
-  #- name: grpo
-  #  path: Chaew00n/test-policy-optimization
-  #  adapted: True
-  #  device: cuda:0
-
-  # 2) Supervised Fine‑Tuning model
-  #- name: sft
-  #  path: Chaew00n/test-supervised-fine-tuning
-  #  adapted: True
-  #  device: cuda:0
-
-  # 3) baseline
-  #- name: base
-  #  path: "Qwen/Qwen3-1.7B"
-  #  adapted: False
-  #  device: cuda:1
+    device: cuda:0
 
 
 # ===================================================================
@@ -46,7 +53,7 @@ expansion_models:
 evaluation:
   datasets: [MSMARCO]
   output_root: ./results/msmarco
-  batch_size: 64
+  batch_size: 128
 
 # ===================================================================
 # Logging options (optional)
