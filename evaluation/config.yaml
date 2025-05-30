@@ -42,7 +42,7 @@ expansion_models:
 
   # 5) baseline
   - name: peusdo
-    path: None
+    path: False
     adapted: False
     device: cuda:0
 

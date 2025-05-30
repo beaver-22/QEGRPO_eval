@@ -69,7 +69,7 @@ def evaluate(config_path: str, models: list[str] | None = None):
                 retrieval_model=retrieval_model_wrapper, expansion_model=expand_model, output_folder=out_dir,
                 batch_size=cfg["evaluation"]["batch_size"]
                 )
-        elif model_cfg["path"] is None:
+        elif not model_cfg["path"]:
             expand_model = PseudoChatModel()
             print(
                 expand_model.generate_single_turn_response(
