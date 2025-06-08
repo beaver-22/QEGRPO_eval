@@ -85,9 +85,9 @@ class MTEBWithQE(MTEB):
     ):
         tick = time()
         
-        if not isinstance(task, AbsTaskRetrievalWithQE):
+        if not isinstance(task, (AbsTaskRetrievalWithQE, AbsTaskRetrievalWithQR)):
             raise TypeError(
-                f"task must be of type {AbsTaskRetrievalWithQE}, got {type(task)}"
+                f"task must be of type AbsTaskRetrievalWithQE or AbsTaskRetrievalWithQR, got {type(task)}"
             )
         
         results = task.evaluate(
