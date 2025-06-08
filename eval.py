@@ -51,9 +51,13 @@ def evaluate(config_path: str, models: list[str] | None = None):
         tasks = []
         name = model_cfg["name"]
         if model_cfg.get("QR", False):
-            tasks.append(MSMARCOWithQR)
+            tasks.append('MSMARCO-with-QR')
+            print("Rewrite Task")
         else:
-            tasks.append(MSMARCOWithQE)
+            tasks.append('MSMARCO-with-QE')
+            print("Expansion Task")
+        evaluator = MTEBWithQE(tasks=tasks)
+        print(evaluator._tasks)
         
         evaluator = MTEBWithQE(tasks=tasks)
         out_dir = os.path.join(cfg["evaluation"]["output_root"], name)
