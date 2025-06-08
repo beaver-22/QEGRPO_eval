@@ -13,7 +13,7 @@ from sentence_transformers import SentenceTransformer, CrossEncoder
 from mteb.model_meta import ModelMeta
 
 from ._chatmodel import BaseChatModel, AdapterChatModel
-from .customtasks._abstaskqe import AbsTaskRetrievalWithQE
+from .customtasks._abstaskqe import AbsTaskRetrievalWithQE, AbsTaskRetrievalWithQR
 
 #logging.basicConfig(
 #    level=logging.INFO,                     # 로그 레벨: INFO
@@ -30,7 +30,9 @@ class MTEBWithQE(MTEB):
         # Get all existing tasks
         tasks_categories_cls = list(AbsTask.__subclasses__())
         tasks_categories_cls += [AbsTaskRetrievalWithQE]
-        self._tasks.append("MSMARCO-with-QE")
+        tasks_categories_cls += [AbsTaskRetrievalWithQR]
+        #self._tasks.append("MSMARCO-with-QR")
+        #self._tasks.append("MSMARCO-with-QE")
         
         self.tasks_cls = [
             cls(hf_subsets=self._task_langs, **kwargs)
